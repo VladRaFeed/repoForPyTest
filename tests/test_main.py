@@ -1,27 +1,47 @@
-
-# test_main.py
 import pytest
 from main import Calculator
 
-def test_add():
-    calculator = Calculator()
-    assert calculator.add(2, 3) == 5
-    assert calculator.add(-1, 1) == 0
+# Фікстура для створення об'єкта Calculator
+@pytest.fixture(scope="module")
+def calculator():
+    return Calculator()
 
-def test_subtract():
-    calculator = Calculator()
-    assert calculator.subtract(5, 3) == 2
-    assert calculator.subtract(10, 10) == 0
-
-def test_multiply():
-    calculator = Calculator()
-    assert calculator.multiply(3, 4) == 12
-    assert calculator.multiply(0, 5) == 0
-
-def test_divide():
-    calculator = Calculator()
-    assert calculator.divide(10, 2) == 5.0
-    assert calculator.divide(9, 3) == 3.0
+@pytest.mark.usefixtures("calculator")
+class TestCalculator:
     
-    with pytest.raises(ValueError, match="Cannot divide by zero"):
-        calculator.divide(5, 0)
+    # Параметризація для тесту додавання
+    @pytest.mark.parametrize(
+        "a, b, expected", 
+        [(2, 3, 5), (-1, 1, 0), (0, 0, 0)]
+    )
+    def test_add(self, calculator, a, b, expected):
+        assert calculator.add(a, b) == expected
+
+    # Параметризація для тесту віднімання
+    @pytest.mark.parametrize(
+        "a, b, expected", 
+        [(5, 3, 2), (10, 10, 0)]
+    )
+    def test_subtract(self, calculator, a, b, expected):
+        assert calculator.subtract(a, b) == expected
+
+    # Параметризація для тесту множення
+    @pytest.mark.parametrize(
+        "a, b, expected", 
+        [(3, 4, 12), (0, 5, 0)]
+    )
+    def test_multiply(self, calculator, a, b, expected):
+        assert calculator.multiply(a, b) == expected
+
+    # Параметризація для тесту ділення
+    @pytest.mark.parametrize(
+        "a, b, expected", 
+        [(10, 2, 5.0), (9, 3, 3.0)]
+    )
+    def test_divide(self, calculator, a, b, expected):
+        assert calculator.divide(a, b) == expected
+
+    def test_divide_by_zero(self, calculator):
+        with pytest.raises(ValueError, match="Cannot divide by zero"):
+            calculator.divide(5, 0)  # Це викликає помилку при діленні на нуль
+
