@@ -16,7 +16,7 @@ def test_subtract():
 def test_multiply():
     calculator = Calculator()
     assert calculator.multiply(3, 4) == 12
-    assert calculator.multiply(0, 5) == 5
+    assert calculator.multiply(0, 5) == 0
 
 def test_divide():
     calculator = Calculator()
